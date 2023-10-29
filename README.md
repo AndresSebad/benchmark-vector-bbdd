@@ -2,7 +2,7 @@
 ## Benchmark Bases de Datos Vectoriales
 * Chroma
 * Qdrant
-* PgVecto
+* PgVector
 * Elastic
 
 ### Tareas
