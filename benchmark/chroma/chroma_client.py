@@ -9,9 +9,8 @@ import pandas as pd
 ##################################
 
 class DatabaseBenchmark:
-    def __init__(self, db_collection, cost_per_hour = False):
+    def __init__(self, db_collection):
         self.db_collection = db_collection
-        self.cost_per_hour = cost_per_hour
 
     def query(self, query_string, n_results):
         # Squared L2
@@ -63,7 +62,8 @@ class DatabaseBenchmark:
 ############ CLIENTE #############
 ##################################
 
-chroma_client = chromadb.HttpClient(host="chroma", port = 8000, settings=Settings(allow_reset=True, anonymized_telemetry=False))
+#chroma_client = chromadb.HttpClient(host="chroma", port = 8000, settings=Settings(allow_reset=True, anonymized_telemetry=False))
+chroma_client = chromadb.Client() # Ocupamos caché
 default_ef = embedding_functions.DefaultEmbeddingFunction() # all-MiniLM-L6-v2 model
 
 ##################################
@@ -73,7 +73,7 @@ default_ef = embedding_functions.DefaultEmbeddingFunction() # all-MiniLM-L6-v2 m
 collection_status = False
 while collection_status != True:
     try:
-        document_collection = chroma_client.get_or_create_collection(name="documents_collection", embedding_function=default_ef)
+        document_collection = chroma_client.get_or_create_collection(name="document_collection", embedding_function=default_ef)
         collection_status = True
     except Exception as e:
         pass
@@ -82,22 +82,20 @@ while collection_status != True:
 ########## PRE PROCESS ###########
 ##################################
 
-documents = pd.read_csv("../data/textos.csv")
+data = pd.read_csv("../data/textos.csv")
 
-textos = data['TEXTO'].tolist() # Lista de textos
+documents = data['TEXTO'].tolist() # Lista de textos
 metadatas = data[['TITULO', 'AUTOR']].to_dict('records') # Lista de diccionarios con metadatos
 ids = [str(x) for x in data.index] # Lista de ids
-
-document_collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
 ##################################
 ########## BENCHMARK #############
 ##################################
 
-Benchmark = DatabaseBenchmark(db_collection=collection, cost_per_hour = False)
+Benchmark = DatabaseBenchmark(db_collection=document_collection)
 
-ibt = Benchmark.measure_index_building_time(textos, metadatas, ids)
+ibt = Benchmark.measure_index_building_time(documents, metadatas, ids)
 qps = Benchmark.measure_qps(num_queries = 20)
 ql = Benchmark.measure_latency()
 
-print(f'Index Building Time: {ibt}\nQueries Per Second: {qps}\nQuery Latency: {ql} Segundos')
+print(f'Index Building Time: {ibt} Segundos \nQueries Per Second: {qps}\nQuery Latency: {ql} Segundos')
