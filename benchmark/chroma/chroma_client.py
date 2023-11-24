@@ -62,8 +62,8 @@ class DatabaseBenchmark:
 ############ CLIENTE #############
 ##################################
 
-#chroma_client = chromadb.HttpClient(host="chroma", port = 8000, settings=Settings(allow_reset=True, anonymized_telemetry=False))
-chroma_client = chromadb.Client() # Ocupamos caché
+chroma_client = chromadb.HttpClient(host="chroma", port = 8000, settings=Settings(allow_reset=True, anonymized_telemetry=False))
+#chroma_client = chromadb.Client() # Ocupamos caché
 default_ef = embedding_functions.DefaultEmbeddingFunction() # all-MiniLM-L6-v2 model
 
 ##################################
