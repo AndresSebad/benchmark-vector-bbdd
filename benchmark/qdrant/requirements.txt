@@ -1,0 +1,5 @@
+qdrant_client
+qdrant_client.http
+timeit
+pandas
+uuid
