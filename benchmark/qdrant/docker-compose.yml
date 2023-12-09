@@ -1,0 +1,16 @@
+version: "3.0"
+services:
+  qdrant_application:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: qdrant_application
+    container_name: qdrant_container
+    volumes:
+      - ./textos.csv:/app/textos.csv
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge
