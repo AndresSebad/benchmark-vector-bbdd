@@ -2,7 +2,6 @@ import psycopg as pg
 from pgvector.psycopg import register_vector
 import pandas as pd
 import numpy as np
-from connections import dbname, user, password, host, port
 import timeit
 
 

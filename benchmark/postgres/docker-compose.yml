@@ -1,0 +1,33 @@
+version: "3.0"
+services:
+  application:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: pg_application
+    container_name: pg_application
+    volumes:
+      - ./textos.csv:/app/textos.csv
+      - ./:/app/
+    networks:
+      - net
+
+  db:
+    hostname: db
+    image: ankane/pgvector
+    ports:
+     - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_DB=vectordb
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpwd
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - net
+      
+networks:
+  net:
+    driver: bridge
