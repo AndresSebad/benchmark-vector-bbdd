@@ -1,5 +1,5 @@
-import psycopg as pg
-from pgvector.psycopg import register_vector
+import psycopg2 as pg
+from pgvector.psycopg2 import register_vector
 import pandas as pd
 import numpy as np
 import timeit
@@ -23,20 +23,15 @@ class DatabaseBenchmark:
         self.trunc = trunc
         self.table = table
 
-    def query(self, query_string, n_results = 1):
-        """
-        query_string: vector de representación de un texto
-        n_results: numeros de vecinos a buscar
-        """
+    def query(self, query_string, n_results=1):
         query_vector = self.trunc.transform(self.vectorizer.transform([query_string]))[0].tolist()
         
         with self.db_connection.cursor() as cur:
-            
-            query = "SELECT * FROM {0} ORDER BY embedding <-> '{1}' LIMIT {2};".format(self.table, query_vector, n_results) 
-        
-            results = cur.execute(query)
+            query = "SELECT * FROM {0} ORDER BY embedding <-> '{1}' LIMIT {2};".format(self.table, query_vector, n_results)
+            cur.execute(query)
+            results = cur.fetchall()  # Agregar esta línea
 
-            return [record for record in results]  
+            return [record for record in results]   
 #       
 
     def build_index(self, method = 'ivfflat'):
